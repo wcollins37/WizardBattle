@@ -73,16 +73,22 @@ public class Game {
             return false;
         }
 
-        if (spell == '+') {
-            this.board.spaces[y][x].incValue();
-        } else {
-            if (this.board.spaces[y][x].getValue() == 0) {
-                System.out.println("Cannot have a negative space value");
-                return false;
-            } else {
-                this.board.spaces[y][x].decValue();
+        boolean realSpell = false;
+
+        do {
+            if (spell == '+') {
+                this.board.spaces[y][x].incValue();
+                realSpell = true;
+            } else if (spell == '-') {
+                if (this.board.spaces[y][x].getValue() == 0) {
+                    System.out.println("Cannot have a negative space value");
+                    return false;
+                } else {
+                    this.board.spaces[y][x].decValue();
+                    realSpell = true;
+                }
             }
-        }
+        } while (!realSpell);
 
         return true;
     }
