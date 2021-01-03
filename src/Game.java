@@ -28,18 +28,16 @@ public class Game {
         int[] movesY = {playerY - spaceValue, playerY, playerY + spaceValue, playerY};
         String[] validDirections = {"UP", "RIGHT", "DOWN", "LEFT"};
         String[] out = new String[4];
-        System.out.println("X: " + Arrays.toString(movesX));
-        System.out.println("Y: " + Arrays.toString(movesY));
 
         for (int i = 0; i < 4; i++) {
             boolean valid = true;
             // Check if move is out of bounds
             if (movesX[i] < 0 || movesX[i] > 4 || movesY[i] < 0 || movesY[i] > 4) {
                 valid = false;
-            // Check if move is in occupied space
+                // Check if move is in occupied space
             } else if (!this.board.spaces[movesY[i]][movesX[i]].getEmpty()) {
                 valid = false;
-            // Check if move is to previous space
+                // Check if move is to previous space
             } else if (movesX[i] == player.getPrevX() && movesY[i] == player.getPrevY()) {
                 valid = false;
             }
@@ -48,7 +46,6 @@ public class Game {
                 out[i] = validDirections[i];
             }
         }
-        System.out.println(Arrays.toString(out));
 
         ArrayList<String> outList = new ArrayList<String>();
         for (String d : out) {
@@ -59,6 +56,33 @@ public class Game {
 
         return outList.toArray(new String[outList.size()]);
     }
+
+    public boolean castSpell(int x, int y, char spell, Wizard player) {
+        if (x < 0 || x > 4 || y < 0 || y > 4) {
+            System.out.println("Out of bounds");
+            return false;
+        } else if (!this.board.spaces[y][x].getEmpty()) {
+            System.out.println("Space occupied");
+            return false;
+        } else if (x == player.getPrevX() && y == player.getPrevY()) {
+            System.out.println("Cannot cast a spell on the space that you moved from");
+            return false;
+        }
+
+        if (spell == '+') {
+            this.board.spaces[y][x].incValue();
+        } else {
+            if (this.board.spaces[y][x].getValue() == 0) {
+                System.out.println("Cannot have a negative space value");
+                return false;
+            } else {
+                this.board.spaces[y][x].decValue();
+            }
+        }
+
+        return true;
+    }
+
     public boolean playerTurn(boolean player1Turn) {
         Wizard current;
         if (player1Turn) {
@@ -87,7 +111,7 @@ public class Game {
             return false;
         }
         System.out.print("You can move " + currentSpaceValue + " space");
-        if (currentSpaceValue == 1) {
+        if (currentSpaceValue != 1) {
             System.out.print("s");
         }
         System.out.print(": ");
@@ -133,6 +157,20 @@ public class Game {
         // Update board
         printGame();
         // Spell
+        boolean validSpell = false;
+        int targetX;
+        int targetY;
+        char spell;
+
+        do {
+            System.out.print("Select target row: (1 - 5) ");
+            targetY = scan.nextInt();
+            System.out.print("Select target column: (1 - 5) ");
+            targetX = scan.nextInt();
+            System.out.print("Select spell: (+, -) ");
+            spell = scan.next().charAt(0);
+            validSpell = castSpell(targetX - 1, targetY - 1, spell, current);
+        } while (!validSpell);
 
         // Switch turns
         changeTurn();
@@ -146,7 +184,7 @@ public class Game {
             // Wizard positions
             for (int j = 0; j < 5; j++) {
                 if (this.board.spaces[i][j].getEmpty()) {
-                     System.out.print("|  ");
+                    System.out.print("|  ");
                 } else {
                     if (i == player1.getY() && j == player1.getX()) {
                         System.out.print("|A ");
@@ -170,7 +208,7 @@ public class Game {
         Game testGame = new Game();
         boolean ongoing = true;
         while (ongoing) {
-            testGame.playerTurn(testGame.player1Turn);
+            ongoing = testGame.playerTurn(testGame.player1Turn);
         }
         // testGame.playerTurn(true);
     }

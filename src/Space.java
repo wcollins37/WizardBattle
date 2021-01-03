@@ -32,13 +32,17 @@ public class Space {
     }
 
     public boolean incValue() {
+        System.out.println("Old value: " + this.value);
         this.value++;
+        System.out.println("Higher value: " + this.value);
         return true;
     }
 
     public boolean decValue() {
+        System.out.println("Old value: " + this.value);
         if (this.value > 0) {
             this.value--;
+            System.out.println("Lower value: " + this.value);
             return true;
         } else {
             return false;
