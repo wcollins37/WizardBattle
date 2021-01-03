@@ -1,19 +1,23 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
 
     Board board = new Board();
-    Wizard player1 = new Wizard(4, 0, true);
-    Wizard player2 = new Wizard(0, 4, false);
+    Wizard player1;
+    Wizard player2;
     boolean player1Turn = true;
     Scanner scan = new Scanner(System.in);
 
+    /*
     public Game() {
         this.board.spaces[player1.getY()][player1.getX()].setEmpty(false);
         this.board.spaces[player2.getY()][player2.getX()].setEmpty(false);
     }
+
+     */
 
     public void changeTurn() {
         this.player1Turn = !this.player1Turn;
@@ -83,9 +87,9 @@ public class Game {
         return true;
     }
 
-    public boolean playerTurn(boolean player1Turn) {
+    public boolean playerTurn() {
         Wizard current;
-        if (player1Turn) {
+        if (this.player1Turn) {
             current = player1;
             System.out.println("Wizard A's turn!");
         } else {
@@ -177,6 +181,95 @@ public class Game {
         return true;
     }
 
+    public boolean computerTurn() {
+        Wizard current;
+        Random rand = new Random();
+
+        if (this.player1Turn) {
+            current = player1;
+            System.out.println("Wizard A's turn!");
+        } else {
+            current = player2;
+            System.out.println("Wizard B's turn!");
+        }
+
+        printGame();
+
+        int currentX = current.getX();
+        int currentY = current.getY();
+        int currentSpaceValue = this.board.spaces[currentY][currentX].getValue();
+
+        String[] valid = showMoves(current);
+        if (valid.length == 0) {
+            System.out.println("No valid moves.");
+            if (player1Turn) {
+                System.out.println("Wizard B wins!");
+            } else {
+                System.out.println("Wizard A wins!");
+            }
+            return false;
+        }
+
+        String chosenMove = valid[rand.nextInt(valid.length)];
+        System.out.println("Moved " + chosenMove);
+        int newX = currentX;
+        int newY = currentY;
+
+        switch (chosenMove) {
+            case "UP":
+                newY -= currentSpaceValue;
+                break;
+            case "RIGHT":
+                newX += currentSpaceValue;
+                break;
+            case "DOWN":
+                newY += currentSpaceValue;
+                break;
+            case "LEFT":
+                newX -= currentSpaceValue;
+                break;
+        }
+
+        current.move(newX, newY);
+        this.board.spaces[currentY][currentX].setEmpty(true);
+        this.board.spaces[newY][newX].setEmpty(false);
+        // Spell
+        boolean validSpell = false;
+        char[] spellList = new char[]{'+', '-'};
+        int targetX;
+        int targetY;
+        char spell;
+
+        do {
+            targetY = rand.nextInt(5);
+            targetX = rand.nextInt(5);
+            spell = spellList[rand.nextInt(2)];
+            validSpell = castSpell(targetX - 1, targetY - 1, spell, current);
+        } while (!validSpell);
+
+        System.out.println(spell + " spell on square (" + targetX + ", " + targetY + ")");
+
+        changeTurn();
+
+        return true;
+    }
+
+    public boolean gameLoop() {
+        if (this.player1Turn) {
+            if (this.player1.getIsHuman()) {
+                return playerTurn();
+            } else {
+                return computerTurn();
+            }
+        } else {
+            if (this.player2.getIsHuman()) {
+                return playerTurn();
+            } else {
+                return computerTurn();
+            }
+        }
+    }
+
     public void printGame() {
         System.out.println("----------------");
         // rows
@@ -206,9 +299,38 @@ public class Game {
 
     public static void main(String[] args) {
         Game testGame = new Game();
+        Scanner gameScan = new Scanner(System.in);
+
+        System.out.println("Welcome to Wizard Battle!");
+        System.out.print("How many human players are there? (0 - 2) ");
+        int playerCount = gameScan.nextInt();
+
+        while (playerCount < 0 || playerCount > 2) {
+            System.out.print("Please input a valid player count: ");
+            playerCount = gameScan.nextInt();
+        }
+
+        switch (playerCount) {
+            case 0:
+                testGame.player1 = new Wizard(4, 0, true, false);
+                testGame.player2 = new Wizard(0, 4, false, false);
+                break;
+            case 1:
+                testGame.player1 = new Wizard(4, 0, true, true);
+                testGame.player2 = new Wizard(0, 4, false, false);
+                break;
+            case 2:
+                testGame.player1 = new Wizard(4, 0, true, true);
+                testGame.player2 = new Wizard(0, 4, false, true);
+                break;
+        }
+
+        testGame.board.spaces[4][0].setEmpty(false);
+        testGame.board.spaces[0][4].setEmpty(false);
+
         boolean ongoing = true;
         while (ongoing) {
-            ongoing = testGame.playerTurn(testGame.player1Turn);
+            ongoing = testGame.gameLoop();
         }
         // testGame.playerTurn(true);
     }

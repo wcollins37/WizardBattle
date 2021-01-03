@@ -5,11 +5,13 @@ public class Wizard {
     int prevX = -1;
     int prevY = -1;
     boolean isPlayerOne;
+    boolean isHuman;
 
-    public Wizard(int x, int y, boolean isPlayerOne) {
+    public Wizard(int x, int y, boolean isPlayerOne, boolean isHuman) {
         this.x = x;
         this.y = y;
         this.isPlayerOne = isPlayerOne;
+        this.isHuman = isHuman;
     }
 
     public int getX() {
@@ -46,6 +48,10 @@ public class Wizard {
 
     public boolean getIsPlayerOne() {
         return this.isPlayerOne;
+    }
+
+    public boolean getIsHuman() {
+        return this.isHuman;
     }
 
     public void move(int x, int y) {
