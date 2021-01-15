@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class Console {
 
     public static void print(String print) {
-        System.out.println(print);
+        System.out.print(print);
     }
 
     public static int readInt(String msg, int min, int max) {

@@ -134,13 +134,7 @@ public class Game {
         System.out.print("\n");
 
         // Move
-        System.out.print("Enter move number: ");
-        int moveNumber = scan.nextInt();
-
-        while (moveNumber <= 0 || moveNumber > valid.length) {
-            System.out.print("Input a valid move number: ");
-            moveNumber = scan.nextInt();
-        }
+        int moveNumber = Console.readInt("Enter move number: ", 1, valid.length);
 
         String chosenMove = valid[moveNumber - 1];
         int newX = currentX;
@@ -173,10 +167,8 @@ public class Game {
         char spell;
 
         do {
-            System.out.print("Select target row: (1 - 5) ");
-            targetY = scan.nextInt();
-            System.out.print("Select target column: (1 - 5) ");
-            targetX = scan.nextInt();
+            targetY = Console.readInt("Select target row: (1 - 5) ",1,5);
+            targetX = Console.readInt("Select target column: (1 - 5) ", 1, 5);
             System.out.print("Select spell: (+, -) ");
             spell = scan.next().charAt(0);
             validSpell = castSpell(targetX - 1, targetY - 1, spell, current);
@@ -305,16 +297,9 @@ public class Game {
 
     public static void main(String[] args) {
         Game testGame = new Game();
-        Scanner gameScan = new Scanner(System.in);
 
         System.out.println("Welcome to Wizard Battle!");
-        System.out.print("How many human players are there? (0 - 2) ");
-        int playerCount = gameScan.nextInt();
-
-        while (playerCount < 0 || playerCount > 2) {
-            System.out.print("Please input a valid player count: ");
-            playerCount = gameScan.nextInt();
-        }
+        int playerCount = Console.readInt("How many human players are there? (0-2)",0,2);
 
         switch (playerCount) {
             case 0:
